@@ -8,4 +8,4 @@ Open `index.html` in any browser. No install, no account.
 
 Facts were checked against Pilgrim Hall Museum, Plimoth Patuxet Museums, Smithsonian, Britannica, the White House Historical Association, USDA and similar sources.
 
-**Play it:** https://rhetoricalrhet.github.io/thangsgiving-trivia/
+**Play it:** https://rhetoricalrhet.github.io/thanksgiving-trivia/
