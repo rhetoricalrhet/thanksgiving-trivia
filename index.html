@@ -4,6 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Thanksgiving Trivia Night</title>
+<meta name="description" content="A fact-checked Thanksgiving trivia game for family and friends: the Mayflower, the real 1621 feast, and the weird stuff in between. Tap through it on any phone or TV.">
+<meta name="theme-color" content="#4a0e1c">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Thanksgiving Trivia Night">
+<meta property="og:description" content="The Thanksgiving you weren’t taught. Six rounds, one final wager. Tap through it on any phone or TV.">
+<meta property="og:url" content="https://rhetoricalrhet.github.io/thanksgiving-trivia/">
+<meta property="og:image" content="https://rhetoricalrhet.github.io/thanksgiving-trivia/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Thanksgiving Trivia Night title screen with a fan of autumn feathers">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rhetoricalrhet.github.io/thanksgiving-trivia/og.jpg">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Outfit:wght@400;600;800&display=swap">
 <style>
@@ -106,6 +121,18 @@ h2{font-size:clamp(30px,6.4vmin,88px)}
  .team .sc{font-size:22px}
  .team button{width:34px;height:34px;font-size:18px}
  .addt{flex:1 1 auto;min-height:34px;padding:4px 10px;font-size:13px}
+}
+/* small screens: after the reveal, keep only the right answer so the story fits */
+@media (max-width:700px),(max-height:520px){
+ .rev .ch:not(.ok){display:none}
+ .rev .ch.ok{transform:none;grid-column:1/-1}
+ .rev .numbox .big{margin:4px 0}
+}
+@media (max-width:700px){
+ .board{gap:5px;padding:6px 8px 8px}
+ .addt{min-height:30px;padding:2px 8px;font-size:12px}
+ .rule{padding:10px 12px}.rule .big{font-size:1.25em}
+ .rules{gap:8px;margin-top:12px}
 }
 /* phones turned sideways: short and wide */
 @media (max-height:520px) and (orientation:landscape){
@@ -272,6 +299,8 @@ function render(){
       <div class="story">${s.s}</div><p class="press">Tap or press Space to reveal</p></div>`;
   }
   stage.innerHTML=`<div class="slide">${h}</div>`;
+  stage.scrollTop=0;
+  if(rev){const st=stage.querySelector('.story');if(st&&stage.scrollHeight>stage.clientHeight+2){setTimeout(()=>{try{st.scrollIntoView({block:'end',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}catch(e){}},350)}}
   document.getElementById('bar').style.width=(idx/(S.length-1)*100)+'%';
   const r=roundOf(idx);
   document.getElementById('where').textContent=r?(r.n==='F'?'Final Question':`Round ${r.n}: ${r.h}`):'Thanksgiving Trivia Night';
