@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thanksgiving Trivia Night</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Outfit:wght@400;600;800&display=swap">
+<style>
+/* VOICE: warm game-show host at a big family table — loud headings, generous payoffs.
+   IDEA: a harvest game-show board; a fanned turkey-tail of autumn feathers is the emblem.
+   PICTURE: feather fan SVG behind title + round cards; answer tiles that light up gold.
+   COLOUR and TYPE: cranberry ground, corn gold accent, squash orange support; Bowlby One + Outfit.
+   LAYOUT: one full-screen stage, TV-legible, scoreboard rail along the bottom. */
+:root{color-scheme:dark;--bg:#4a0e1c;--bg2:#3a0a15;--ink:#fff6ea;--mute:#e9c9b8;--gold:#f4b73a;--squash:#e8702a;--leaf:#7d2a1e;--tile:#5e1626;--tile2:#6d1b2d}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(120% 90% at 50% 0%,#651a2b 0%,var(--bg) 55%,var(--bg2) 100%);color:var(--ink);font:400 clamp(15px,2.1vmin,30px)/1.45 Outfit,system-ui,sans-serif;overflow:hidden;display:grid;grid-template-rows:auto 1fr auto}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px max(3vw,14px);font-size:clamp(13px,1.6vmin,20px);color:var(--mute)}
+.top .tag{font-weight:600;letter-spacing:.02em}
+.top .ctl{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 14px;min-height:40px}
+.chip:hover{background:rgba(255,255,255,.16)}
+.prog{height:4px;background:rgba(255,255,255,.1)}
+.prog i{display:block;height:100%;background:var(--gold);transition:width .4s}
+#stage{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:clamp(12px,3vmin,48px) max(5vw,16px)}
+.slide{width:100%;max-width:1500px;animation:in .45s ease both}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.slide{animation:none}.prog i{transition:none}}
+h1,h2,.big{font-family:"Bowlby One",Impact,sans-serif;font-weight:400;line-height:1.05;text-wrap:balance;margin:0}
+h1{font-size:clamp(40px,9vmin,128px)}
+h2{font-size:clamp(30px,6.4vmin,88px)}
+.lede{font-size:clamp(18px,3.2vmin,42px);color:var(--mute);max-width:32em;margin:.6em auto 0;text-wrap:balance}
+.center{text-align:center}
+.fan{display:block;margin:0 auto;width:min(70vmin,720px);height:auto}
+.fan.sm{width:min(42vmin,420px)}
+.hero{display:grid;gap:clamp(8px,2vmin,24px);justify-items:center;text-align:center}
+.hero .fanwrap{margin-bottom:-14vmin}
+.pill{display:inline-block;background:var(--gold);color:#3a0a15;font-weight:800;border-radius:999px;padding:.25em .9em;font-size:clamp(13px,2vmin,26px)}
+.pill.kid{background:#ffd9a8}
+.pill.alt{background:rgba(255,255,255,.12);color:var(--ink)}
+.meta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:clamp(10px,2.4vmin,30px)}
+.qtext{font-family:Outfit,sans-serif;font-weight:800;font-size:clamp(24px,5vmin,70px);line-height:1.12;text-align:center;text-wrap:balance;margin:0 auto clamp(14px,3.4vmin,44px);max-width:24em}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,1.8vmin,22px)}
+.choices.tf{max-width:1000px;margin:0 auto}
+.ch{display:flex;align-items:center;gap:.7em;background:var(--tile);border:2px solid rgba(255,255,255,.12);border-radius:18px;padding:clamp(10px,2.2vmin,28px) clamp(12px,2.6vmin,34px);font-size:clamp(17px,3.3vmin,46px);font-weight:600;transition:all .35s;box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.ch b{flex:none;display:grid;place-items:center;width:1.7em;height:1.7em;border-radius:50%;background:rgba(255,255,255,.12);font-family:"Bowlby One",sans-serif;font-weight:400;font-size:.8em}
+.rev .ch{opacity:.35;transform:scale(.98)}
+.rev .ch.ok{opacity:1;transform:scale(1.02);background:var(--gold);color:#3a0a15;border-color:#fff3c9}
+.rev .ch.ok b{background:#3a0a15;color:var(--gold)}
+.numbox{text-align:center;margin:0 auto}
+.numbox .big{font-size:clamp(48px,14vmin,190px);color:var(--gold);display:none}
+.numbox .hint{font-size:clamp(16px,2.6vmin,34px);color:var(--mute)}
+.rev .numbox .big{display:block;animation:in .5s ease both}
+.rev .numbox .hint{display:none}
+.story{display:none;margin:clamp(14px,3vmin,40px) auto 0;max-width:1200px;background:rgba(0,0,0,.22);border-left:6px solid var(--squash);border-radius:12px;padding:clamp(12px,2.2vmin,28px) clamp(16px,3vmin,38px);font-size:clamp(16px,2.7vmin,36px);line-height:1.38}
+.story strong{color:var(--gold)}
+.rev .story{display:block;animation:in .5s .15s ease both}
+.press{text-align:center;margin-top:clamp(10px,2.4vmin,28px);color:var(--mute);font-size:clamp(13px,1.8vmin,22px)}
+.rev .press{visibility:hidden}
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,2vmin,24px);margin-top:clamp(16px,3vmin,40px);text-align:left}
+.rule{background:var(--tile);border-radius:16px;padding:clamp(12px,2.2vmin,28px);font-size:clamp(16px,2.6vmin,34px)}
+.rule .big{font-size:1.5em;color:var(--gold);display:block;margin-bottom:.15em}
+.rnum{font-family:"Bowlby One",sans-serif;color:var(--gold);font-size:clamp(20px,4vmin,54px)}
+/* scoreboard */
+.board{display:flex;gap:clamp(6px,1.2vmin,14px);align-items:stretch;padding:10px max(3vw,14px) 14px;background:rgba(0,0,0,.28);border-top:1px solid rgba(255,255,255,.1);overflow-x:auto}
+.team{flex:1 1 0;min-width:150px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;background:var(--tile2);border-radius:14px;padding:6px 8px}
+.team input{grid-column:1/-1;background:transparent;border:0;color:var(--mute);font:600 clamp(13px,1.7vmin,20px) Outfit,sans-serif;text-align:center;width:100%;padding:2px}
+.team .sc{font-family:"Bowlby One",sans-serif;font-size:clamp(22px,4vmin,52px);text-align:center;color:var(--ink);line-height:1}
+.team button{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.12);font-size:22px;font-weight:800}
+.team button.plus{background:var(--gold);color:#3a0a15}
+.team.lead{box-shadow:inset 0 0 0 3px var(--gold)}
+.addt{flex:none;align-self:center}
+/* host notes */
+#notes{position:fixed;inset:0;background:var(--bg2);overflow:auto;padding:24px max(4vw,16px) 60px;display:none;z-index:9;font-size:16px}
+#notes.on{display:block}
+#notes h2{font-size:32px;margin-bottom:6px}
+#notes ol{padding-left:1.4em}
+#notes li{margin:10px 0;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.1)}
+#notes .ans{color:var(--gold);font-weight:800}
+#notes .rh{font-family:"Bowlby One",sans-serif;color:var(--squash);margin:22px 0 4px;font-size:20px}
+.src{font-size:14px;color:var(--mute);margin-top:30px}
+@media (max-width:700px){
+ body{height:100vh;height:100dvh}
+ .choices,.rules{grid-template-columns:minmax(0,1fr)}
+ #stage{overflow-y:auto;align-items:flex-start;padding:18px 16px}
+ .slide{margin:auto 0}
+ .top{padding:8px 10px}
+ .top .tag,#bFull{display:none}
+ .top .ctl{width:100%;flex-wrap:nowrap;gap:6px}
+ .chip{flex:1 1 0;padding:6px 8px;min-height:40px;font-size:14px;white-space:nowrap}
+ h1{font-size:34px}h2{font-size:26px}
+ .lede{font-size:17px}
+ .qtext{font-size:22px;margin-bottom:14px}
+ .ch{font-size:17px;padding:10px 12px;border-radius:14px;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+ .story{font-size:16px;margin-top:14px}
+ .rule{font-size:16px}
+ .fan{width:min(78vw,340px)}.fan.sm{width:min(52vw,220px)}
+ .hero .fanwrap{margin-bottom:-6px}
+ .board{flex-wrap:wrap;gap:6px;padding:8px 10px 10px;overflow:visible}
+ .team{flex:1 1 28%;min-width:0;gap:2px;padding:4px;border-radius:12px}
+ .team input{font-size:12px}
+ .team .sc{font-size:22px}
+ .team button{width:34px;height:34px;font-size:18px}
+ .addt{flex:1 1 auto;min-height:34px;padding:4px 10px;font-size:13px}
+}
+</style>
+</head>
+<body>
+<div>
+  <div class="top">
+    <span class="tag" id="where">Thanksgiving Trivia Night</span>
+    <span class="ctl">
+      <button class="chip" id="bPrev" aria-label="Previous">◀ Back</button>
+      <button class="chip" id="bNext" aria-label="Next or reveal">Next ▶</button>
+      <button class="chip" id="bFull">Full screen (F)</button>
+      <button class="chip" id="bNotes">Host key (H)</button>
+    </span>
+  </div>
+  <div class="prog"><i id="bar"></i></div>
+</div>
+<main id="stage"></main>
+<div class="board" id="board"></div>
+<div id="notes"></div>
+
+<script>
+{
+const FEATHERS=['#f4b73a','#e8702a','#c2421f','#8f2a1c','#f4b73a','#e8702a','#c2421f','#8f2a1c','#f4b73a'];
+function fan(cls){
+  let g='';const n=FEATHERS.length;
+  for(let i=0;i<n;i++){
+    const a=-80+i*(160/(n-1));
+    g+=`<g transform="rotate(${a} 300 300)"><path d="M300 300 C 262 220 262 90 300 30 C 338 90 338 220 300 300Z" fill="${FEATHERS[i]}"/><path d="M300 290 L300 50" stroke="rgba(0,0,0,.25)" stroke-width="3"/><path d="M300 300 C 278 240 276 150 300 92 C 324 150 322 240 300 300Z" fill="rgba(255,255,255,.12)"/></g>`;
+  }
+  return `<svg class="fan ${cls||''}" viewBox="0 0 600 330" aria-hidden="true">${g}<ellipse cx="300" cy="305" rx="70" ry="26" fill="#2b0710"/></svg>`;
+}
+
+const S=[
+{t:'title'},
+{t:'intro',h:'Almost everything we “know” about the first Thanksgiving comes from one paragraph.',p:'A single letter written by colonist Edward Winslow in December 1621. Turkey, buckles, pumpkin pie and the name “Thanksgiving” itself were mostly added later. Tonight: what actually happened, how it became a holiday, and the weird stuff in between.'},
+{t:'rules'},
+
+{t:'round',n:1,h:'The Mayflower',p:'Getting there was the hard part'},
+{t:'num',q:'Closest number wins: how many days did the Mayflower take to cross the Atlantic?',a:'66 days',s:'The crossing took <strong>66 days</strong>, roughly twice as long as planned, through autumn storms. Midway across, a main beam <strong>cracked</strong>, and they fixed it with a large iron screw.'},
+{t:'q',q:'The Mayflower was supposed to sail with a second ship, the Speedwell. What happened to it?',c:['It sank in a storm','It leaked so badly they turned back twice, then left it behind','Pirates captured it','It sailed to Virginia instead'],a:1,s:'The Speedwell carried the congregation from Holland, but it leaked so badly that <strong>both ships turned back to England twice</strong>. Everyone who was still willing crammed onto the Mayflower. The ironic part: <strong>the Speedwell outlasted the Mayflower</strong> and was still crossing the Atlantic in 1635.'},
+{t:'q',q:'Where were the Pilgrims actually supposed to settle?',c:['Plymouth, Massachusetts','Maine','Near the mouth of the Hudson River (New York)','Florida'],a:2,s:'They had permission to settle in “Northern Virginia,” which then reached up to the <strong>Hudson River</strong>. Storms pushed them hundreds of miles north. They tried to sail south, but dangerous shoals off Cape Cod forced them back.'},
+{t:'q',kid:true,q:'Before carrying Pilgrims, what did the Mayflower usually haul?',c:['Wine','Gold','Zoo animals','Cannons'],a:0,s:'The Mayflower was a cargo ship that had spent <strong>years in the wine trade</strong>. It was about 100 feet long and held 102 passengers plus crew, so each family got very little space.'},
+{t:'q',q:'Where did the Mayflower first drop anchor in America?',c:['Plymouth Rock','The tip of Cape Cod (today’s Provincetown)','Boston Harbor','Jamestown'],a:1,s:'They anchored at <strong>Cape Cod</strong> first and explored for about a month before choosing Plymouth in December. Before anyone went ashore, <strong>41 men signed the Mayflower Compact</strong>, agreeing to govern themselves since they had landed outside their charter.'},
+{t:'q',kid:true,q:'A baby boy was born on the Mayflower during the voyage. What was he named?',c:['Atlanticus','Oceanus','Mariner','Neptune'],a:1,s:'<strong>Oceanus Hopkins</strong>, Latin for “ocean,” because he was born at sea. A second boy born while the ship sat in Cape Cod harbor was named <strong>Peregrine</strong>, which means “traveler.”'},
+{t:'q',q:'When was Plymouth Rock first identified as the Pilgrims’ landing spot?',c:['1620, the day they landed','1621, at the harvest feast','1741','1876'],a:2,s:'Neither Bradford nor Winslow ever mentions a rock. In <strong>1741</strong>, 121 years later, the town planned a wharf that would bury the boulder, and <strong>94-year-old Thomas Faunce</strong> spoke up. He said his father, who arrived in 1623, had told him it was the spot.'},
+{t:'q',q:'In March 1621, Samoset walked alone into Plymouth. What did he say?',c:['“Welcome, Englishmen!”','“Leave this land.”','Nothing; he left a gift and walked away','A Wampanoag word no one understood'],a:0,s:'He greeted them <strong>in English</strong>. Samoset was an Abenaki leader from Maine who had picked up English from <strong>fishermen working near Monhegan Island</strong>. A week later he came back with Tisquantum.'},
+
+{t:'round',n:2,h:'1621: Myth vs. Reality',p:'What actually happened at Plymouth'},
+{t:'q',q:'How long did the 1621 harvest feast last?',c:['One afternoon','Three days','A full week','A month'],a:1,s:'Winslow wrote that the colonists <strong>entertained and feasted</strong> Massasoit and his men <strong>for three days</strong>, with games, food and target shooting. It was a harvest party, not one sit-down dinner.'},
+{t:'q',q:'Who outnumbered whom at the feast?',c:['English, about 2 to 1','Roughly even','Wampanoag, about 2 to 1','Wampanoag, about 10 to 1'],a:2,s:'About <strong>90 Wampanoag men</strong> came with their leader Massasoit (Ousamequin). Only about <strong>50 colonists</strong> were left. Roughly half of the Mayflower’s 102 passengers had died during the first winter.'},
+{t:'q',q:'Which meat is definitely on record at the 1621 feast?',c:['Turkey','Ham','Venison','Lobster'],a:2,s:'The Wampanoag went hunting and brought <strong>five deer</strong>. Winslow also mentions “fowl,” which could have meant turkey but just as easily ducks and geese. <strong>Turkey is never named</strong> in his account of the feast.'},
+{t:'q',kind:'tf',q:'True or false: The Pilgrims called their 1621 feast “Thanksgiving.”',c:['True','False'],a:1,s:'<strong>False.</strong> To them a “thanksgiving” was a solemn religious day of prayer, sometimes with fasting. A three-day party with games and guns didn’t qualify. They didn’t call themselves “Pilgrims” either. That name caught on much later.'},
+{t:'q',q:'Tisquantum (“Squanto”) could translate because he spoke English. How did he learn it?',c:['From shipwrecked sailors','He was kidnapped and taken to Europe','Trading with fishermen','From missionaries'],a:1,s:'In <strong>1614</strong> an English captain kidnapped him to sell into slavery in Spain. He escaped to England and got home in 1619, only to find his village, <strong>Patuxet</strong>, wiped out by an epidemic. <strong>Plymouth Colony was built on its ruins.</strong>'},
+{t:'q',kind:'tf',kid:true,q:'True or false: Pilgrims wore tall black hats with shiny buckles.',c:['True','False'],a:1,s:'<strong>False!</strong> Buckles weren’t in fashion yet. Painters in the 1800s invented that look. Everyday Pilgrim clothes were often colorful: reds, greens, browns and violets.'},
+{t:'q',q:'Why did Massasoit and his 90 men show up at the feast?',c:['They were formally invited','They heard gunfire and came to check','They came to trade furs','Nobody knows for sure'],a:3,s:'<strong>Nobody knows.</strong> Winslow doesn’t say. A popular theory is that the colonists were firing guns in celebration, and the Wampanoag came to check. They had signed a mutual-defense treaty with the colonists that spring.'},
+
+{t:'round',n:3,h:'How It Became a Holiday',p:'242 years from Plymouth to proclamation'},
+{t:'q',q:'Who campaigned for 17 years to make Thanksgiving a national holiday?',c:['Benjamin Franklin','Sarah Josepha Hale','Frederick Douglass','Martha Washington'],a:1,s:'Magazine editor <strong>Sarah Josepha Hale</strong> wrote editorials and letters to five presidents until Lincoln finally said yes. Bonus: she also wrote (or at least first published) <strong>“Mary Had a Little Lamb.”</strong>'},
+{t:'q',q:'Lincoln declared a national Thanksgiving in 1863. What was going on?',c:['The Civil War','The Gold Rush','The War of 1812','The Mexican–American War'],a:0,s:'Months after <strong>Gettysburg</strong>, Lincoln set the last Thursday of November as a national day of thanks, asking the country to also remember the widows, orphans and suffering of the war.'},
+{t:'q',q:'Which early president refused to declare a Thanksgiving day?',c:['George Washington','John Adams','Thomas Jefferson','James Madison'],a:2,s:'<strong>Jefferson</strong> believed a president proclaiming religious observances crossed the line between church and state. Washington, by contrast, declared one in 1789.'},
+{t:'q',q:'In 1939, FDR moved Thanksgiving a week earlier. Why?',c:['A wartime emergency','To give stores a longer Christmas shopping season','To avoid a football conflict','The harvest came in early'],a:1,s:'November 1939 had five Thursdays, which pushed Thanksgiving to the 30th. Stores still in the Depression wanted more shopping days, so FDR moved it up a week. Critics called it <strong>“Franksgiving,”</strong> and states split, with some celebrating both weeks. In <strong>1941</strong> Congress locked in the fourth Thursday.'},
+{t:'q',q:'Which president gave the first OFFICIAL turkey pardon?',c:['Abraham Lincoln','Harry Truman','John F. Kennedy','George H. W. Bush'],a:3,s:'Lincoln’s son Tad reportedly begged him to spare a turkey, and JFK sent one back in 1963 saying “let’s keep him going.” Truman is often credited, but it’s a myth. <strong>George H. W. Bush made it official in 1989.</strong>'},
+{t:'q',q:'When do Canadians celebrate Thanksgiving?',c:['The same day as the U.S.','Second Monday of October','First Sunday of September','Day after U.S. Thanksgiving'],a:1,s:'Canada’s harvest comes earlier up north. Canada also claims an older first: explorer <strong>Martin Frobisher</strong> held a thanksgiving in the Arctic in <strong>1578</strong>, 43 years before Plymouth.'},
+
+{t:'round',n:4,h:'The Food',p:'Where your plate actually came from'},
+{t:'q',kind:'tf',kid:true,q:'True or false: Pumpkin pie was served at the 1621 feast.',c:['True','False'],a:1,s:'<strong>False.</strong> The colonists had no ovens for baking yet, and little or no butter or wheat flour for crust. They likely had pumpkins and squash, just stewed or roasted, not in a pie.'},
+{t:'q',q:'Ripe cranberries have a hidden talent. What is it?',c:['They bounce','They glow under a blacklight','They sink in water','They’re sweet off the vine'],a:0,s:'Good cranberries <strong>bounce</strong>. Growers have long sorted them with bounce tests, and spoiled ones don’t bounce. Four little air pockets inside also make them <strong>float</strong>, which is why bogs get flooded at harvest.'},
+{t:'q',q:'When was green bean casserole invented?',c:['1621','1863','1955','1989'],a:2,s:'<strong>Dorcas Reilly</strong> created it in Campbell’s test kitchen in <strong>1955</strong>, using ingredients most kitchens already had. Her original recipe card was donated to the <strong>National Inventors Hall of Fame</strong>.'},
+{t:'q',kind:'tf',q:'True or false: Ben Franklin officially proposed the turkey as the national bird.',c:['True','False'],a:1,s:'<strong>False, but close.</strong> In a 1784 letter addressed to his daughter (which he apparently never sent) he called the eagle a bird of “bad moral character” and the turkey “much more respectable.” He was mocking a medal design, though, and <strong>never formally proposed</strong> the turkey.'},
+{t:'q',kind:'tf',q:'True or false: Tryptophan in turkey is why you get sleepy after dinner.',c:['True','False'],a:1,s:'<strong>Mostly myth.</strong> Turkey has about as much tryptophan as chicken. The real culprit is an enormous meal heavy on carbs, plus pie, plus maybe a glass of wine.'},
+{t:'q',q:'Those “yams” at the grocery store are usually…',c:['Real yams','Sweet potatoes','A type of squash','Taro root'],a:1,s:'<strong>They’re sweet potatoes.</strong> True yams are a different plant: starchy, with rough bark-like skin, grown mostly in Africa and Asia. The “yam” label on orange sweet potatoes started as marketing.'},
+{t:'num',q:'Closest number wins: how fast can a WILD turkey fly?',a:'55 mph',s:'Wild turkeys burst into flight at up to <strong>about 55 mph</strong> over short distances and can run around 25 mph. Farm turkeys can’t fly at all. They’ve been bred too heavy.'},
+
+{t:'round',n:5,h:'Modern Thanksgiving',p:'Parades, football, pardons and chaos'},
+{t:'q',q:'The very first Macy’s parade in 1924 featured…',c:['Giant character balloons','Live animals from the Central Park Zoo','Only marching bands','A hot-air balloon race'],a:1,s:'There were <strong>live zoo animals</strong> in 1924. The giant balloons showed up in <strong>1927</strong>. For a few years after that, Macy’s <strong>released the balloons into the sky</strong> at the end and offered a reward of up to $100 to whoever found them.'},
+{t:'q',q:'Which NFL team has played on Thanksgiving almost every year since 1934?',c:['Dallas Cowboys','Green Bay Packers','Detroit Lions','Chicago Bears'],a:2,s:'The <strong>Lions’</strong> new owner scheduled a holiday game in 1934 to draw a crowd, and it sold out two weeks early. The only gap was 1939–1944, spanning the “Franksgiving” years and World War II. Dallas joined the tradition in 1966.'},
+{t:'num',q:'Closest number wins: about how many turkeys do Americans eat on Thanksgiving?',a:'≈ 46 million',s:'That’s the estimate the USDA and the National Turkey Federation cite, about <strong>46 million birds</strong> in one day. Another ~22 million get eaten at Christmas.'},
+{t:'q',q:'Which state raises the most turkeys?',c:['Texas','North Carolina','Minnesota','Arkansas'],a:2,s:'<strong>Minnesota</strong> has led the country for decades, raising roughly 40 million birds a year. That’s about <strong>seven turkeys for every Minnesotan</strong>.'},
+{t:'q',q:'Where did the name “Black Friday” come from?',c:['Stores finally going “into the black”','Philadelphia police describing the chaos','An 1869 stock-market crash','A historic blizzard'],a:1,s:'In the 1950s–60s, <strong>Philadelphia police</strong> used “Black Friday” for the gridlock and shopping mobs the day after Thanksgiving. The “into the black” explanation came later as a friendlier spin.'},
+{t:'q',kid:true,q:'What is a baby turkey called?',c:['A chick','A poult','A gobblet','A kit'],a:1,s:'A baby turkey is a <strong>poult</strong>. Grown boys are <strong>toms</strong>, grown girls are <strong>hens</strong>, and only the toms really gobble.'},
+
+{t:'round',n:6,h:'Hidden Gems',p:'Around the world and the rest of the story'},
+{t:'q',q:'Which state claims a “first Thanksgiving” BEFORE Plymouth in 1621?',c:['Florida (1565)','Texas (1598)','Virginia (1619)','All three'],a:3,s:'<strong>All three.</strong> Spanish settlers shared a meal with the Timucua at St. Augustine in 1565. Explorer Oñate held a thanksgiving near El Paso in 1598. And Virginia’s Berkeley Hundred colonists were ordered to hold an annual day of thanks in 1619.'},
+{t:'q',q:'Which country celebrates its own Thanksgiving on the first Thursday of November?',c:['Liberia','Ireland','Brazil','Japan'],a:0,s:'<strong>Liberia</strong> was founded in the 1800s with help from formerly enslaved Black Americans who emigrated there and brought the holiday with them. It’s been national law there since 1883.'},
+{t:'q',q:'A tiny Pacific island celebrates American-style Thanksgiving every November. Why?',c:['A U.S. military base','American whaling ships brought it','A Hollywood movie','A sister-city deal'],a:1,s:'<strong>Norfolk Island</strong>, an Australian territory, got the holiday from <strong>American whalers</strong> who stopped there in the 1800s. Locals still celebrate it.'},
+{t:'q',q:'The 1621 peace treaty between Massasoit and the colonists lasted about how long?',c:['Less than a year','About 10 years','About 40 years','It’s still in effect'],a:2,s:'It held for about <strong>40 years</strong>, until after Massasoit’s death in 1661. As colonists took more land, relations fell apart. In 1675 his son <strong>Metacom</strong> led a war against the colonists, one of the deadliest conflicts per capita in American history.'},
+{t:'q',kind:'tf',kid:true,q:'True or false: The Wampanoag people still live in Massachusetts today.',c:['True','False'],a:0,s:'<strong>True!</strong> The <strong>Mashpee</strong> and <strong>Aquinnah</strong> Wampanoag are federally recognized tribes. Their ancestors were at the 1621 feast, and they’re still here.'},
+
+{t:'final'},
+{t:'num',final:true,q:'Eighteen adult women sailed on the Mayflower. How many were still alive for the 1621 harvest feast?',a:'4 or 5',s:'The first winter hit women hardest. Sources count <strong>four or five</strong> (Plimoth Patuxet Museums counts five), alongside about 24 men and 24 kids and teens. So <strong>a handful of women likely cooked</strong> for 140+ people over three days.'},
+{t:'end'}
+];
+
+const stage=document.getElementById('stage');
+let idx=0,rev=false;
+try{const v=+localStorage.getItem('tg-idx');if(v>0&&v<S.length)idx=v;}catch(e){}
+
+const qNums=[];let qn=0;S.forEach((s,i)=>{if(s.t==='q'||s.t==='num'){qn++;qNums[i]=qn;}});
+function roundOf(i){for(let j=i;j>=0;j--){if(S[j].t==='round')return S[j];if(S[j].t==='final')return{n:'F',h:'Final Question'};}return null;}
+
+function render(){
+  const s=S[idx];let h='';
+  if(s.t==='title'){
+    h=`<div class="hero"><div class="fanwrap">${fan()}</div><h1>The Thanksgiving<br>You Weren’t Taught</h1><p class="lede">A trivia night for family &amp; friends, hosted by <strong style="color:var(--gold)">Rhet</strong>. Six rounds, one final wager, zero mercy.</p><p class="press">Tap Next, or press → / Space, to begin</p></div>`;
+  }else if(s.t==='intro'){
+    h=`<div class="center"><h2>${s.h}</h2><p class="lede">${s.p}</p></div>`;
+  }else if(s.t==='rules'){
+    h=`<div class="center"><h2>How to play</h2><div class="rules">
+      <div class="rule"><span class="big">Teams</span>Split into teams and name yourselves below. Talk it out, then lock in one answer.</div>
+      <div class="rule"><span class="big">1 point</span>for each correct answer. Questions tagged <span class="pill kid">Kids’ table</span> are for the youngest player on each team.</div>
+      <div class="rule"><span class="big">2 points</span>on “closest number” questions go to the team that guesses nearest.</div>
+      <div class="rule"><span class="big">The Final</span>Wager any or all of your points on one last question.</div>
+    </div></div>`;
+  }else if(s.t==='round'){
+    h=`<div class="hero">${fan('sm')}<div class="rnum">Round ${s.n}</div><h1>${s.h}</h1><p class="lede">${s.p}</p></div>`;
+  }else if(s.t==='final'){
+    h=`<div class="hero">${fan('sm')}<div class="rnum">Final Question</div><h1>Place your wagers</h1><p class="lede">Each team secretly writes down how many points they’ll bet, from zero up to everything they have. Get it right, gain it. Get it wrong, lose it. Closest number counts as right.</p></div>`;
+  }else if(s.t==='end'){
+    const t=teams.slice().sort((a,b)=>b.s-a.s);
+    const w=t.length&&t[0].s>0?`<p class="lede">Champions: <strong style="color:var(--gold)">${esc(t[0].n)}</strong> with ${t[0].s} points</p>`:'';
+    h=`<div class="hero">${fan()}<h1>One more question</h1>${w}<p class="lede" style="font-size:clamp(20px,3.8vmin,52px);color:var(--ink)">Around the table: what’s something from this year you didn’t expect to be grateful for?</p></div>`;
+  }else if(s.t==='q'){
+    const r=roundOf(idx);
+    const L=s.kind==='tf'?['T','F']:['A','B','C','D'];
+    h=`<div class="${rev?'rev':''}"><div class="meta"><span class="pill alt">Round ${r?r.n:''} · Q${qNums[idx]}</span>${s.kid?'<span class="pill kid">Kids’ table</span>':''}</div>
+      <p class="qtext">${s.q}</p>
+      <div class="choices ${s.kind==='tf'?'tf':''}">${s.c.map((c,i)=>`<div class="ch ${i===s.a?'ok':''}"><b>${L[i]}</b><span>${c}</span></div>`).join('')}</div>
+      <div class="story">${s.s}</div><p class="press">Tap or press Space to reveal</p></div>`;
+  }else if(s.t==='num'){
+    const r=roundOf(idx);
+    h=`<div class="${rev?'rev':''}"><div class="meta"><span class="pill alt">${s.final?'Final':'Round '+(r?r.n:'')+' · Q'+qNums[idx]}</span><span class="pill">${s.final?'Wager':'Closest number · 2 pts'}</span></div>
+      <p class="qtext">${s.q}</p>
+      <div class="numbox"><div class="big">${s.a}</div><div class="hint">Every team writes down a number…</div></div>
+      <div class="story">${s.s}</div><p class="press">Tap or press Space to reveal</p></div>`;
+  }
+  stage.innerHTML=`<div class="slide">${h}</div>`;
+  document.getElementById('bar').style.width=(idx/(S.length-1)*100)+'%';
+  const r=roundOf(idx);
+  document.getElementById('where').textContent=r?(r.n==='F'?'Final Question':`Round ${r.n}: ${r.h}`):'Thanksgiving Trivia Night';
+  try{localStorage.setItem('tg-idx',idx);}catch(e){}
+}
+function isQ(){const t=S[idx].t;return t==='q'||t==='num';}
+function next(){if(isQ()&&!rev){rev=true;render();return;}if(idx<S.length-1){idx++;rev=false;render();}}
+function prev(){if(isQ()&&rev){rev=false;render();return;}if(idx>0){idx--;rev=false;render();}}
+
+/* scoreboard */
+const board=document.getElementById('board');
+let teams=[{n:'Team Drumstick',s:0},{n:'Team Gravy',s:0},{n:'Team Pie',s:0}];
+try{const t=JSON.parse(localStorage.getItem('tg-teams')||'null');if(Array.isArray(t)&&t.length)teams=t;}catch(e){}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function save(){try{localStorage.setItem('tg-teams',JSON.stringify(teams));}catch(e){}}
+function drawBoard(){
+  const top=Math.max(...teams.map(t=>t.s));
+  board.innerHTML=teams.map((t,i)=>`<div class="team ${t.s>0&&t.s===top?'lead':''}"><input data-i="${i}" value="${esc(t.n)}" aria-label="Team ${i+1} name"><button class="minus" data-i="${i}" data-d="-1" aria-label="Minus one">−</button><div class="sc">${t.s}</div><button class="plus" data-i="${i}" data-d="1" aria-label="Plus one">+</button></div>`).join('')+
+  `<button class="chip addt" id="addT">+ Team</button>${teams.length>2?'<button class="chip addt" id="remT">− Team</button>':''}<button class="chip addt" id="resetS">Reset</button>`;
+}
+function bump(i,d){if(!teams[i])return;teams[i].s+=d;save();drawBoard();}
+board.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.d){bump(+b.dataset.i,+b.dataset.d);return;}
+  if(b.id==='addT'&&teams.length<6){teams.push({n:'Team '+(teams.length+1),s:0});}
+  if(b.id==='remT'&&teams.length>2){teams.pop();}
+  if(b.id==='resetS'){teams.forEach(t=>t.s=0);idx=0;rev=false;render();}
+  save();drawBoard();
+});
+board.addEventListener('input',e=>{const i=e.target.dataset.i;if(i!=null){teams[+i].n=e.target.value;save();}});
+
+/* host notes */
+const notes=document.getElementById('notes');
+function drawNotes(){
+  let h='<button class="chip" id="closeN" style="float:right">Close (H)</button><h2>Host answer key</h2><p style="color:var(--mute)">Open this page on your phone to keep the answers handy.</p>';
+  let open=false;
+  S.forEach((s,i)=>{
+    if(s.t==='round'||s.t==='final'){if(open)h+='</ol>';h+=`<div class="rh">${s.t==='final'?'Final':'Round '+s.n+': '+s.h}</div><ol start="1">`;open=true;}
+    if(s.t==='q')h+=`<li>${s.q}<br><span class="ans">${['A','B','C','D'][s.a]&&s.kind==='tf'?s.c[s.a]:['A','B','C','D'][s.a]+') '+s.c[s.a]}</span></li>`;
+    if(s.t==='num')h+=`<li>${s.q}<br><span class="ans">${s.a}</span></li>`;
+  });
+  if(open)h+='</ol>';
+  h+=`<p class="src">Main sources: Edward Winslow’s 1621 letter (Mourt’s Relation); Plimoth Patuxet Museums; Pilgrim Hall Museum; Smithsonian; National Wild Turkey Federation; USDA / National Turkey Federation figures.</p>`;
+  notes.innerHTML=h;
+}
+function toggleNotes(){notes.classList.toggle('on');if(notes.classList.contains('on'))drawNotes();}
+notes.addEventListener('click',e=>{if(e.target.id==='closeN')toggleNotes();});
+
+function full(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen();}catch(e){}}
+
+document.getElementById('bNext').addEventListener('click',next);
+document.getElementById('bPrev').addEventListener('click',prev);
+document.getElementById('bFull').addEventListener('click',full);
+document.getElementById('bNotes').addEventListener('click',toggleNotes);
+stage.addEventListener('click',next);
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'||e.key==='Enter'){e.preventDefault();next();}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'||e.key==='Backspace'){e.preventDefault();prev();}
+  else if(e.key==='f'||e.key==='F')full();
+  else if(e.key==='h'||e.key==='H')toggleNotes();
+  else if(/^Digit[1-6]$/.test(e.code)){bump(+e.code.slice(5)-1,e.shiftKey?-1:1);}
+});
+
+drawBoard();render();
+}
+</script>
+</body>
+</html>
